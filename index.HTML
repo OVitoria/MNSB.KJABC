@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo de Quadrados</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="game-container">
+        <div id="start-screen">Clique para Começar</div>
+        <div id="lives">Vidas: 5</div>
+        <div id="pontuacao">Pontuação: 0</div>
+        <img src="./fotos/teste.png" class="player" id="player" alt="ocultista">
+    </div>
+
+    <script>
+        const gameContainer = document.getElementById("game-container");
+        const startScreen = document.getElementById("start-screen");
+        const player = document.getElementById("player");
+        const livesDisplay = document.getElementById("lives");
+        const pontoDisplay = document.getElementById("pontuacao")
+        let lives = 5;
+        let pontos = 0;
+        let gameActive = false;
+        let refrao = new Audio('sons/solar2.mp3');
+        let gameOver = new Audio('sons/gameoverr.mp3');
+
+
+        // Ajusta o jogador para seguir o cursor apenas na horizontal
+        gameContainer.addEventListener("mousemove", (e) => {
+            if (!gameActive) return;
+            const rect = gameContainer.getBoundingClientRect();
+            const x = e.clientX - rect.left - player.offsetWidth / 2;
+            player.style.left = `${Math.max(0, Math.min(x, gameContainer.offsetWidth - player.offsetWidth))}px`;
+            
+        });
+
+        // Suporte para mobile (toques)
+        gameContainer.addEventListener("touchmove", (e) => {
+            if (!gameActive) return;
+            const rect = gameContainer.getBoundingClientRect();
+            const touch = e.touches[0];
+            const x = touch.clientX - rect.left - player.offsetWidth / 2;
+            player.style.left = `${Math.max(0, Math.min(x, gameContainer.offsetWidth - player.offsetWidth))}px`;
+        });
+
+        // Inicia o jogo ao clicar na tela inicial
+        startScreen.addEventListener("click", () => {
+            startScreen.style.display = "none";
+            gameActive = true;
+            startGame();
+        });
+        
+        // Função para criar quadrados caindo
+        function createFallingSquare() {
+            if (!gameActive) return;
+            const square = document.createElement("div");
+            const isDangerous = Math.random() < 0.7; // 70% dos quadrados são perigosos
+            square.classList.add("falling-square");
+            square.style.backgroundImage = isDangerous ? "url('fotos/Velaerra.png')" : "url('fotos/Velaocul.png')";
+            square.style.left = `${Math.random() * (gameContainer.offsetWidth - 50)}px`;
+            square.style.top = "-50px";
+            gameContainer.appendChild(square);
+
+            // Animação do quadrado caindo
+            const fallInterval = setInterval(() => {
+                const currentTop = parseFloat(square.style.top);
+                square.style.top = `${currentTop + 5}px`;
+
+                // Verifica colisão com o jogador
+                const squareRect = square.getBoundingClientRect();
+                const playerRect = player.getBoundingClientRect();
+                if (
+                    squareRect.left < playerRect.right &&
+                    squareRect.right > playerRect.left &&
+                    squareRect.top < playerRect.bottom &&
+                    squareRect.bottom > playerRect.top
+                ) {
+                    if (isDangerous) {
+                        loseLife();
+                    }else{
+                        pontos+=1;
+                        pontoDisplay.textContent= `Pontuação: ${pontos}`;
+                        if(pontos == 5){
+                            endGame();
+                let ganhar = document.createElement("div") 
+            ganhar.setAttribute("id","start-screen");
+            document.getElementById("game-container").appendChild(ganhar);
+            ganhar.innerHTML = "VOCÊ GANHOU!";
+
+            ganhar.addEventListener("click", () => {
+            ganhar.style.display = "none";
+            gameActive = true;
+            location.reload();
+        });
+                        }
+                    }
+                    gameContainer.removeChild(square);
+                    clearInterval(fallInterval);
+                }
+
+                // Remove o quadrado se sair da tela
+                if (currentTop > gameContainer.offsetHeight) {
+                    gameContainer.removeChild(square);
+                    clearInterval(fallInterval);
+                }
+            }, 20);
+
+            // Cria novos quadrados continuamente
+            setTimeout(createFallingSquare, Math.random() * 1000 + 500);
+        }
+
+        // Perde uma vida
+        function loseLife() {
+            lives--;
+            livesDisplay.textContent = `Vidas: ${lives} `;
+            if (lives <= 0) {
+                gameOver.play();
+                endGame();
+                let teste = document.createElement("div") 
+            teste.setAttribute("id","start-screen");
+            document.getElementById("game-container").appendChild(teste);
+            teste.innerHTML = "GAME OVER";
+            
+            teste.addEventListener("click", () => {
+            teste.style.display = "none";
+            gameActive = true;
+            location.reload();
+        });
+            }
+        }
+        // Finaliza o jogo
+        function endGame() {
+            gameActive = false;
+            refrao.pause();
+        }
+
+        // Inicia o jogo
+        function startGame() {
+            lives = 5;
+            livesDisplay.textContent = `Vidas: ${lives}`;
+            createFallingSquare();
+          refrao.play();
+            
+        }
+        
+    </script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+body {
+    margin: 0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0f0f0;
+    font-family: Arial, sans-serif;
+}
+#game-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    background-image: url(./fotos/cena5.webp);
+    overflow: hidden;
+}
+#start-screen {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    font-size: 24px;
+    z-index: 2;
+    cursor: pointer;
+}
+.player {
+    position: absolute;
+    bottom: 20px; /* Fixa o jogador próximo ao chão */
+    left: 50%; /* Começa centralizado */
+    transform: translateX(-50%);
+    width: 100px;
+    height: 190px;
+    border-radius: 10px;
+    pointer-events: none;
+}
+.falling-square {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    border-radius: 10px;
+    background-size: 100%;
+}
+#lives {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 18px;
+    color: black;
+    z-index: 1;
+}
+#pontuacao{
+    position: absolute;
+    top: 10px;
+    left: 100px;
+    font-size: 18px;
+    color: black;
+    z-index: 1;
+}
